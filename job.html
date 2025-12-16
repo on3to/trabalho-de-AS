@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Lavanderia - Sistema Completo</title>
+    <title>Lavanderia - Sistema Completo verção final</title>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
     
     <style>
@@ -88,7 +88,7 @@
         <div class="sidebar">
             <div class="logo-area">
                 <div class="logo-box">L</div>
-                <div><div style="font-weight: 700; letter-spacing: 0.5px;">LAVANDERIA</div><div style="font-size: 0.75rem; color: #94a3b8;">Gestão v2.3</div></div>
+                <div><div style="font-weight: 700; letter-spacing: 0.5px;">LAVANDERIA</div><div style="font-size: 0.75rem; color: #94a3b8;">Gestão v2.4</div></div>
             </div>
             <div class="menu-item active" onclick="sistema.navegar('pedido')">📝 Novo Pedido</div>
             <div class="menu-item" onclick="sistema.navegar('clientes')">👥 Clientes</div>
@@ -119,13 +119,14 @@
                             <div class="form-row">
                                 <div class="form-group"><label>Cliente</label><input type="text" id="pedido-cliente" list="lista-clientes-sugestao" placeholder="Buscar cliente...">
                                 <datalist id="lista-clientes-sugestao"></datalist></div>
-                                <div class="form-group"><label>Telefone</label><input type="text" id="pedido-tel" placeholder="(00) 00000-0000"></div>
+                                
+                                <div class="form-group"><label>Telefone</label><input type="text" id="pedido-tel" placeholder="(86) 99999-9999" maxlength="15" onkeyup="handlePhone(event)"></div>
                             </div>
                             <div style="background: #f8fafc; padding: 25px; border-radius: 12px; margin-bottom: 25px; border: 1px dashed #cbd5e1;">
                                 <label style="margin-bottom: 15px; display:block;">Adicionar Itens</label>
                                 <div class="form-row" style="margin-bottom: 0; align-items: flex-end;">
                                     <div class="form-group" style="flex: 2;"><label style="font-size: 0.75rem; color: #94a3b8;">Tipo</label><select id="peca-tipo"><option>Camisa</option><option>Calça</option><option>Edredom</option><option>Terno</option></select></div>
-                                    <div class="form-group" style="flex: 2;"><label style="font-size: 0.75rem; color: #94a3b8;">Serviço</label><select id="peca-servico"><option>Lavar</option><option>Secar</option><option>Completo</option><option>Secar</option></select></div>
+                                    <div class="form-group" style="flex: 2;"><label style="font-size: 0.75rem; color: #94a3b8;">Serviço</label><select id="peca-servico"><option>Lavar</option><option>Secar</option><option>Completo</option></select></div>
                                     <div class="form-group" style="flex: 1;"><label style="font-size: 0.75rem; color: #94a3b8;">Preço</label><input type="number" id="peca-preco" value="20.00"></div>
                                     <button class="btn btn-primary" onclick="ctrlPedido.adicionarPeca()" style="margin-bottom: 1px; height: 44px;">+ Incluir</button>
                                 </div>
@@ -144,7 +145,11 @@
                         <div class="section-header"><h2>Clientes</h2><button class="btn btn-primary" onclick="document.getElementById('form-cliente-box').style.display = 'block'">+ Novo</button></div>
                         <div class="card" id="form-cliente-box" style="display:block;">
                             <h4 style="margin-bottom: 15px; color: var(--primary);">Cadastro Rápido</h4>
-                            <div class="form-row"><div class="form-group"><label>Nome Completo</label><input type="text" id="cad-nome"></div><div class="form-group"><label>Telefone</label><input type="text" id="cad-tel"></div></div>
+                            <div class="form-row"><div class="form-group"><label>Nome Completo</label><input type="text" id="cad-nome"></div>
+                            
+                            <div class="form-group"><label>Telefone</label><input type="text" id="cad-tel" placeholder="(86) 99999-9999" maxlength="15" onkeyup="handlePhone(event)"></div>
+                            
+                            </div>
                             <div class="form-group"><label>Endereço</label><input type="text" id="cad-end"></div>
                             <div style="text-align: right; margin-top: 15px;"><button class="btn btn-primary" onclick="ctrlCliente.salvar()">Salvar Registro</button></div>
                         </div>
@@ -169,23 +174,30 @@
 
     <script>
         
+        const handlePhone = (event) => {
+            let input = event.target;
+            input.value = phoneMask(input.value);
+        }
+
+        const phoneMask = (value) => {
+            if (!value) return "";
+            value = value.replace(/\D/g,''); 
+            value = value.replace(/(\d{2})(\d)/,"($1) $2"); 
+            value = value.replace(/(\d)(\d{4})$/,"$1-$2"); 
+            return value;
+        }
+
+        
         const carregarDados = () => {
             const salvos = localStorage.getItem('lavanderia_db_v2');
             return salvos ? JSON.parse(salvos) : { clientes: [], pedidos: [] };
         };
 
         const db = carregarDados();
-
-        
-        const salvarTudo = () => {
-            localStorage.setItem('lavanderia_db_v2', JSON.stringify(db));
-        };
+        const salvarTudo = () => { localStorage.setItem('lavanderia_db_v2', JSON.stringify(db)); };
 
         class Sistema {
-            constructor() {
-                
-                setTimeout(() => ctrlCliente.atualizarDatalist(), 500);
-            }
+            constructor() { setTimeout(() => ctrlCliente.atualizarDatalist(), 500); }
             login() {
                 const u = document.getElementById('user').value;
                 const p = document.getElementById('pass').value;
@@ -200,7 +212,7 @@
                 document.querySelectorAll('.screen').forEach(el => el.classList.remove('active'));
                 document.getElementById('screen-' + telaId).classList.add('active');
                 if(telaId === 'relatorios') ctrlRelatorio.gerar();
-                if(telaId === 'clientes') ctrlCliente.render(); 
+                if(telaId === 'clientes') ctrlCliente.render();
             }
         }
 
@@ -234,16 +246,16 @@
             }
             finalizarPedido() {
                 const cli = document.getElementById('pedido-cliente').value;
+                const tel = document.getElementById('pedido-tel').value; 
+                
                 if(!cli || !this.pecas.length) return alert("Preencha os dados!");
                 
-                
-                db.pedidos.push({ cliente: cli, qtd: this.pecas.length, total: this.calcular().final, data: new Date().toLocaleDateString() });
-                salvarTudo(); 
-                
+                db.pedidos.push({ cliente: cli, telefone: tel, qtd: this.pecas.length, total: this.calcular().final, data: new Date().toLocaleDateString() });
+                salvarTudo();
                 alert("Pedido Salvo!"); 
-                this.pecas = []; 
-                this.render();
+                this.pecas = []; this.render();
                 document.getElementById('pedido-cliente').value = "";
+                document.getElementById('pedido-tel').value = "";
             }
         }
 
@@ -254,21 +266,19 @@
                 const end = document.getElementById('cad-end').value;
                 if(!nome) return alert("Preencha nome!");
                 
-                
                 db.clientes.push({ nome, tel, end });
-                salvarTudo(); 
-                
-                this.render();
-                this.atualizarDatalist();
+                salvarTudo();
+                this.render(); this.atualizarDatalist();
                 alert("Cliente Salvo!");
                 document.getElementById('cad-nome').value = "";
+                document.getElementById('cad-tel').value = "";
+                document.getElementById('cad-end').value = "";
             }
             excluir(i) { 
                 if(confirm("Excluir cliente?")) {
                     db.clientes.splice(i, 1); 
-                    salvarTudo(); 
-                    this.render(); 
-                    this.atualizarDatalist();
+                    salvarTudo();
+                    this.render(); this.atualizarDatalist();
                 }
             }
             render() {
@@ -298,8 +308,7 @@
             excluir(i) { 
                 if(confirm("Apagar pedido do histórico?")) {
                     db.pedidos.splice(i, 1); 
-                    salvarTudo(); 
-                    this.gerar(); 
+                    salvarTudo(); this.gerar(); 
                 }
             }
         }
@@ -309,7 +318,6 @@
         const ctrlCliente = new ClienteCtrl();
         const ctrlRelatorio = new RelatorioCtrl();
         
-        // Renderiza inicial se houver dados
         ctrlCliente.render();
         ctrlCliente.atualizarDatalist();
 
