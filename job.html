@@ -7,7 +7,7 @@
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
     
     <style>
-        /* --- TEMA AZUL PROFISSIONAL --- */
+        
         :root {
             --primary: #3b82f6; --primary-dark: #2563eb; --sidebar-bg: #0f172a;
             --bg-body: #f1f5f9; --white: #ffffff; --text-dark: #1e293b; --text-gray: #64748b;
@@ -125,7 +125,7 @@
                                 <label style="margin-bottom: 15px; display:block;">Adicionar Itens</label>
                                 <div class="form-row" style="margin-bottom: 0; align-items: flex-end;">
                                     <div class="form-group" style="flex: 2;"><label style="font-size: 0.75rem; color: #94a3b8;">Tipo</label><select id="peca-tipo"><option>Camisa</option><option>Calça</option><option>Edredom</option><option>Terno</option></select></div>
-                                    <div class="form-group" style="flex: 2;"><label style="font-size: 0.75rem; color: #94a3b8;">Serviço</label><select id="peca-servico"><option>Lavar</option><option>Secar</option><option>Completo</option></select></div>
+                                    <div class="form-group" style="flex: 2;"><label style="font-size: 0.75rem; color: #94a3b8;">Serviço</label><select id="peca-servico"><option>Lavar</option><option>Secar</option><option>Completo</option><option>Secar</option></select></div>
                                     <div class="form-group" style="flex: 1;"><label style="font-size: 0.75rem; color: #94a3b8;">Preço</label><input type="number" id="peca-preco" value="20.00"></div>
                                     <button class="btn btn-primary" onclick="ctrlPedido.adicionarPeca()" style="margin-bottom: 1px; height: 44px;">+ Incluir</button>
                                 </div>
@@ -168,9 +168,7 @@
     </div>
 
     <script>
-        // --- SISTEMA COM PERSISTÊNCIA (LOCALSTORAGE) ---
         
-        // 1. Carrega dados salvos ou cria vazios
         const carregarDados = () => {
             const salvos = localStorage.getItem('lavanderia_db_v2');
             return salvos ? JSON.parse(salvos) : { clientes: [], pedidos: [] };
@@ -178,14 +176,14 @@
 
         const db = carregarDados();
 
-        // 2. Função para salvar sempre que mudar algo
+        
         const salvarTudo = () => {
             localStorage.setItem('lavanderia_db_v2', JSON.stringify(db));
         };
 
         class Sistema {
             constructor() {
-                // Ao iniciar, já preenche a lista de sugestão de clientes
+                
                 setTimeout(() => ctrlCliente.atualizarDatalist(), 500);
             }
             login() {
@@ -202,7 +200,7 @@
                 document.querySelectorAll('.screen').forEach(el => el.classList.remove('active'));
                 document.getElementById('screen-' + telaId).classList.add('active');
                 if(telaId === 'relatorios') ctrlRelatorio.gerar();
-                if(telaId === 'clientes') ctrlCliente.render(); // Renderiza clientes ao entrar na aba
+                if(telaId === 'clientes') ctrlCliente.render(); 
             }
         }
 
@@ -238,9 +236,9 @@
                 const cli = document.getElementById('pedido-cliente').value;
                 if(!cli || !this.pecas.length) return alert("Preencha os dados!");
                 
-                // Salva no DB e no LocalStorage
+                
                 db.pedidos.push({ cliente: cli, qtd: this.pecas.length, total: this.calcular().final, data: new Date().toLocaleDateString() });
-                salvarTudo(); // <--- SALVA AQUI
+                salvarTudo(); 
                 
                 alert("Pedido Salvo!"); 
                 this.pecas = []; 
@@ -256,9 +254,9 @@
                 const end = document.getElementById('cad-end').value;
                 if(!nome) return alert("Preencha nome!");
                 
-                // Salva no DB e no LocalStorage
+                
                 db.clientes.push({ nome, tel, end });
-                salvarTudo(); // <--- SALVA AQUI
+                salvarTudo(); 
                 
                 this.render();
                 this.atualizarDatalist();
@@ -268,7 +266,7 @@
             excluir(i) { 
                 if(confirm("Excluir cliente?")) {
                     db.clientes.splice(i, 1); 
-                    salvarTudo(); // <--- SALVA AQUI
+                    salvarTudo(); 
                     this.render(); 
                     this.atualizarDatalist();
                 }
@@ -300,7 +298,7 @@
             excluir(i) { 
                 if(confirm("Apagar pedido do histórico?")) {
                     db.pedidos.splice(i, 1); 
-                    salvarTudo(); // <--- SALVA AQUI
+                    salvarTudo(); 
                     this.gerar(); 
                 }
             }
