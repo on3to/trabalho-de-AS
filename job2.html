@@ -88,7 +88,7 @@
         <div class="sidebar">
             <div class="logo-area">
                 <div class="logo-box">L</div>
-                <div><div style="font-weight: 700; letter-spacing: 0.5px;">LAVANDERIA</div><div style="font-size: 0.75rem; color: #94a3b8;">Gestão v2.4</div></div>
+                <div><div style="font-weight: 700; letter-spacing: 0.5px;">LAVANDERIA</div><div style="font-size: 0.75rem; color: #94a3b8;">Gestão v3.0</div></div>
             </div>
             <div class="menu-item active" onclick="sistema.navegar('pedido')">📝 Novo Pedido</div>
             <div class="menu-item" onclick="sistema.navegar('clientes')">👥 Clientes</div>
@@ -113,20 +113,20 @@
             <div class="content">
                 <div id="screen-pedido" class="screen active">
                     <div class="screen-wrapper">
-                        <div class="section-header"><h2>Novo Pedido</h2><span style="background: #e0f2fe; color: var(--primary); padding: 5px 12px; border-radius: 20px; font-size: 0.8rem; font-weight: 600;">Hoje: 12/12/2025</span></div>
+                        <div class="section-header"><h2>Novo Pedido</h2><span style="background: #e0f2fe; color: var(--primary); padding: 5px 12px; border-radius: 20px; font-size: 0.8rem; font-weight: 600;">Hoje: 17/12/2025</span></div>
                         <div class="card">
                             <h4 style="margin-bottom: 20px; color: var(--text-gray); text-transform: uppercase; font-size: 0.8rem; letter-spacing: 1px;">Dados do Cliente</h4>
                             <div class="form-row">
                                 <div class="form-group"><label>Cliente</label><input type="text" id="pedido-cliente" list="lista-clientes-sugestao" placeholder="Buscar cliente...">
                                 <datalist id="lista-clientes-sugestao"></datalist></div>
                                 
-                                <div class="form-group"><label>Telefone</label><input type="text" id="pedido-tel" placeholder="(86) 99999-9999" maxlength="15" onkeyup="handlePhone(event)"></div>
+                                <div class="form-group"><label>Telefone alternativo</label><input type="text" id="pedido-tel" placeholder="(86) 99999-9999" maxlength="15" onkeyup="handlePhone(event)"></div>
                             </div>
                             <div style="background: #f8fafc; padding: 25px; border-radius: 12px; margin-bottom: 25px; border: 1px dashed #cbd5e1;">
                                 <label style="margin-bottom: 15px; display:block;">Adicionar Itens</label>
                                 <div class="form-row" style="margin-bottom: 0; align-items: flex-end;">
                                     <div class="form-group" style="flex: 2;"><label style="font-size: 0.75rem; color: #94a3b8;">Tipo</label><select id="peca-tipo"><option>Camisa</option><option>Calça</option><option>Edredom</option><option>Terno</option></select></div>
-                                    <div class="form-group" style="flex: 2;"><label style="font-size: 0.75rem; color: #94a3b8;">Serviço</label><select id="peca-servico"><option>Lavar</option><option>Secar</option><option>Completo</option></select></div>
+                                    <div class="form-group" style="flex: 2;"><label style="font-size: 0.75rem; color: #94a3b8;">Serviço</label><select id="peca-servico"><option>Lavar</option><option>Secar</option><option>Passar</option><option>Completo</option></select></div>
                                     <div class="form-group" style="flex: 1;"><label style="font-size: 0.75rem; color: #94a3b8;">Preço</label><input type="number" id="peca-preco" value="20.00"></div>
                                     <button class="btn btn-primary" onclick="ctrlPedido.adicionarPeca()" style="margin-bottom: 1px; height: 44px;">+ Incluir</button>
                                 </div>
