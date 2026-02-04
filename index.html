@@ -1,0 +1,327 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Lavanderia - Sistema Completo verção final</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    
+    <style>
+        
+        :root {
+            --primary: #3b82f6; --primary-dark: #2563eb; --sidebar-bg: #0f172a;
+            --bg-body: #f1f5f9; --white: #ffffff; --text-dark: #1e293b; --text-gray: #64748b;
+            --danger: #ef4444; --shadow: 0 4px 6px -1px rgba(0,0,0,0.1);
+            --radius-card: 16px; --radius-btn: 8px;
+        }
+        * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Inter', sans-serif; outline: none; }
+        body { background-color: var(--bg-body); display: flex; height: 100vh; color: var(--text-dark); overflow: hidden; }
+        
+        /* LOGIN */
+        #login-overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: linear-gradient(135deg, #1e3a8a 0%, #3b82f6 100%); z-index: 1000; display: flex; justify-content: center; align-items: center; }
+        .login-box { background: var(--white); padding: 3rem; border-radius: 24px; width: 360px; text-align: center; box-shadow: 0 20px 25px -5px rgba(0,0,0,0.1); }
+        .login-box input { width: 100%; padding: 12px; margin: 10px 0; border: 1px solid #e2e8f0; border-radius: 8px; background: #f8fafc; }
+        .login-box button { width: 100%; padding: 12px; background: var(--primary); color: white; border: none; border-radius: 8px; cursor: pointer; font-weight: 600; margin-top: 15px; }
+
+        /* SIDEBAR */
+        .sidebar { width: 260px; background-color: var(--sidebar-bg); color: white; display: flex; flex-direction: column; padding: 20px 15px; z-index: 10; flex-shrink: 0; }
+        .logo-area { padding: 10px 15px 40px 15px; display: flex; align-items: center; gap: 12px; }
+        .logo-box { width: 40px; height: 40px; background: var(--primary); border-radius: 10px; display: flex; align-items: center; justify-content: center; color: white; font-weight: 800; font-size: 1.2rem; }
+        .menu-item { padding: 12px 20px; margin-bottom: 5px; cursor: pointer; color: #94a3b8; font-weight: 500; font-size: 0.9rem; display: flex; align-items: center; gap: 12px; transition: 0.2s; border-radius: 10px; }
+        .menu-item:hover { color: white; background: rgba(255,255,255,0.05); }
+        .menu-item.active { background: var(--primary); color: white; font-weight: 600; box-shadow: 0 4px 12px rgba(59,130,246,0.3); }
+
+        /* MAIN */
+        .main-wrapper { flex: 1; display: flex; flex-direction: column; overflow: hidden; position: relative; }
+        .top-header { height: 75px; background: var(--white); display: flex; justify-content: space-between; align-items: center; padding: 0 40px; box-shadow: 0 1px 2px 0 rgba(0,0,0,0.05); z-index: 5; flex-shrink: 0; }
+        .search-bar { background: #f1f5f9; border: none; border-radius: 50px; padding: 10px 20px; width: 320px; color: var(--text-gray); }
+        .user-avatar { width: 38px; height: 38px; background: #dbeafe; color: var(--primary); border-radius: 50%; display: flex; align-items: center; justify-content: center; font-weight: 700; border: 2px solid white; }
+
+        /* CONTENT */
+        .content { flex: 1; padding: 40px; overflow-y: auto; }
+        .screen-wrapper { max-width: 1200px; margin: 0 auto; } 
+        .screen { display: none; animation: fadeIn 0.3s ease-out; }
+        .screen.active { display: block; }
+        .section-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 30px; height: 40px; }
+        h2 { font-size: 1.6rem; font-weight: 800; color: var(--sidebar-bg); margin: 0; }
+
+        /* UI ELEMENTS */
+        .card { background: var(--white); padding: 30px; border-radius: var(--radius-card); box-shadow: var(--shadow); margin-bottom: 25px; border: 1px solid #f1f5f9; }
+        .form-row { display: flex; gap: 25px; margin-bottom: 20px; }
+        .form-group { flex: 1; }
+        label { display: block; margin-bottom: 8px; font-weight: 600; font-size: 0.85rem; color: var(--text-dark); }
+        input, select { width: 100%; padding: 12px 15px; border: 1px solid #cbd5e1; border-radius: var(--radius-btn); color: var(--text-dark); background: #fff; font-size: 0.95rem; }
+        input:focus, select:focus { border-color: var(--primary); box-shadow: 0 0 0 3px rgba(59,130,246,0.1); }
+        .btn { padding: 12px 24px; border: none; border-radius: var(--radius-btn); cursor: pointer; font-weight: 600; font-size: 0.9rem; transition: 0.2s; display: inline-flex; align-items: center; justify-content: center; gap: 8px; }
+        .btn-primary { background-color: var(--primary); color: white; }
+        .btn-primary:hover { background-color: var(--primary-dark); transform: translateY(-1px); }
+        .btn-danger { background-color: #fef2f2; color: var(--danger); border: 1px solid #fee2e2; padding: 6px 14px; font-size: 0.8rem; border-radius: 6px; } 
+
+        table { width: 100%; border-collapse: separate; border-spacing: 0; }
+        th { text-align: left; padding: 15px; font-size: 0.75rem; text-transform: uppercase; letter-spacing: 0.8px; color: #64748b; font-weight: 700; border-bottom: 2px solid #f1f5f9; }
+        td { padding: 18px 15px; border-bottom: 1px solid #f8fafc; color: var(--text-dark); font-size: 0.95rem; vertical-align: middle; }
+        
+        .report-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 30px; margin-bottom: 30px; }
+        .kpi-card { background: var(--white); padding: 30px; border-radius: var(--radius-card); box-shadow: var(--shadow); position: relative; border: 1px solid #f1f5f9; }
+        .kpi-value { font-size: 2.2rem; font-weight: 800; color: var(--sidebar-bg); margin-top: 5px; }
+        .badge-discount { background: #dcfce7; color: #15803d; padding: 6px 14px; border-radius: 50px; font-size: 0.8rem; font-weight: 700; display: inline-block; margin-top: 5px; }
+
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+    </style>
+</head>
+<body>
+    <div id="login-overlay">
+        <div class="login-box">
+            <div style="display: flex; justify-content: center; margin-bottom: 25px;">
+                <div style="width: 60px; height: 60px; background: var(--primary); border-radius: 14px; display: flex; align-items: center; justify-content: center; color: white; font-weight: 800; font-size: 1.8rem;">L</div>
+            </div>
+            <h3>Lavanderia Auto</h3>
+            <p style="color: #64748b; margin-bottom: 25px;">Painel Administrativo</p>
+            <input type="text" id="user" placeholder="Usuário">
+            <input type="password" id="pass" placeholder="Senha">
+            <button onclick="sistema.login()">Acessar Painel</button>
+            <p style="margin-top: 15px; font-size: 0.8rem; color: #94a3b8;">Use "admin" / "admin"</p>
+        </div>
+    </div>
+
+    <div id="app-container" style="display: none;">
+        <div class="sidebar">
+            <div class="logo-area">
+                <div class="logo-box">L</div>
+                <div><div style="font-weight: 700; letter-spacing: 0.5px;">LAVANDERIA</div><div style="font-size: 0.75rem; color: #94a3b8;">Gestão v3.0</div></div>
+            </div>
+            <div class="menu-item active" onclick="sistema.navegar('pedido')">📝 Novo Pedido</div>
+            <div class="menu-item" onclick="sistema.navegar('clientes')">👥 Clientes</div>
+            <div class="menu-item" onclick="sistema.navegar('relatorios')">📊 Relatórios</div>
+            <div style="margin-top: auto; padding-top: 20px; border-top: 1px solid rgba(255,255,255,0.1);">
+                <div class="menu-item" onclick="location.reload()" style="color: #fca5a5;">🚪 Sair</div>
+            </div>
+        </div>
+
+        <div class="main-wrapper">
+            <div class="top-header">
+                <div style="display: flex; align-items: center; gap: 20px;">
+                    <div style="cursor: pointer; color: #94a3b8; font-size: 1.2rem;">☰</div>
+                    <input type="text" class="search-bar" placeholder="Buscar...">
+                </div>
+                <div style="display: flex; align-items: center; gap: 12px;">
+                    <div style="text-align: right; line-height: 1.3;"><span style="display: block; font-weight: 700; font-size: 0.9rem;">Administrador</span><span style="font-size: 0.75rem; color: var(--text-gray);">Gerente</span></div>
+                    <div class="user-avatar">AD</div>
+                </div>
+            </div>
+
+            <div class="content">
+                <div id="screen-pedido" class="screen active">
+                    <div class="screen-wrapper">
+                        <div class="section-header"><h2>Novo Pedido</h2><span style="background: #e0f2fe; color: var(--primary); padding: 5px 12px; border-radius: 20px; font-size: 0.8rem; font-weight: 600;">Hoje: 17/12/2025</span></div>
+                        <div class="card">
+                            <h4 style="margin-bottom: 20px; color: var(--text-gray); text-transform: uppercase; font-size: 0.8rem; letter-spacing: 1px;">Dados do Cliente</h4>
+                            <div class="form-row">
+                                <div class="form-group"><label>Cliente</label><input type="text" id="pedido-cliente" list="lista-clientes-sugestao" placeholder="Buscar cliente...">
+                                <datalist id="lista-clientes-sugestao"></datalist></div>
+                                
+                                <div class="form-group"><label>Telefone alternativo</label><input type="text" id="pedido-tel" placeholder="(86) 99999-9999" maxlength="15" onkeyup="handlePhone(event)"></div>
+                            </div>
+                            <div style="background: #f8fafc; padding: 25px; border-radius: 12px; margin-bottom: 25px; border: 1px dashed #cbd5e1;">
+                                <label style="margin-bottom: 15px; display:block;">Adicionar Itens</label>
+                                <div class="form-row" style="margin-bottom: 0; align-items: flex-end;">
+                                    <div class="form-group" style="flex: 2;"><label style="font-size: 0.75rem; color: #94a3b8;">Tipo</label><select id="peca-tipo"><option>Camisa</option><option>Calça</option><option>Edredom</option><option>Terno</option></select></div>
+                                    <div class="form-group" style="flex: 2;"><label style="font-size: 0.75rem; color: #94a3b8;">Serviço</label><select id="peca-servico"><option>Lavar</option><option>Secar</option><option>Passar</option><option>Completo</option></select></div>
+                                    <div class="form-group" style="flex: 1;"><label style="font-size: 0.75rem; color: #94a3b8;">Preço</label><input type="number" id="peca-preco" value="20.00"></div>
+                                    <button class="btn btn-primary" onclick="ctrlPedido.adicionarPeca()" style="margin-bottom: 1px; height: 44px;">+ Incluir</button>
+                                </div>
+                            </div>
+                            <table><thead><tr><th>Item</th><th>Serviço</th><th>Valor</th><th style="text-align: center;">Ações</th></tr></thead><tbody id="tabela-pecas-body"></tbody></table>
+                            <div style="margin-top: 30px; display: flex; justify-content: flex-end; align-items: center; gap: 20px; border-top: 1px solid #f1f5f9; padding-top: 20px;">
+                                <div style="text-align: right;"><div id="msg-desconto" class="badge-discount" style="display: none;"></div><div style="font-size: 1.6rem; font-weight: 800; color: var(--sidebar-bg); margin-top: 5px;">Total: R$ <span id="valor-total">0.00</span></div></div>
+                                <button class="btn btn-primary" style="padding: 14px 35px; background-color: #059669;" onclick="ctrlPedido.finalizarPedido()">✔ Finalizar</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div id="screen-clientes" class="screen">
+                    <div class="screen-wrapper">
+                        <div class="section-header"><h2>Clientes</h2><button class="btn btn-primary" onclick="document.getElementById('form-cliente-box').style.display = 'block'">+ Novo</button></div>
+                        <div class="card" id="form-cliente-box" style="display:block;">
+                            <h4 style="margin-bottom: 15px; color: var(--primary);">Cadastro Rápido</h4>
+                            <div class="form-row"><div class="form-group"><label>Nome Completo</label><input type="text" id="cad-nome"></div>
+                            
+                            <div class="form-group"><label>Telefone</label><input type="text" id="cad-tel" placeholder="(86) 99999-9999" maxlength="15" onkeyup="handlePhone(event)"></div>
+                            
+                            </div>
+                            <div class="form-group"><label>Endereço</label><input type="text" id="cad-end"></div>
+                            <div style="text-align: right; margin-top: 15px;"><button class="btn btn-primary" onclick="ctrlCliente.salvar()">Salvar Registro</button></div>
+                        </div>
+                        <div class="card" style="padding: 0; overflow: hidden;"><table id="tabela-clientes" style="margin-top: 0;"><thead><tr style="background: #f8fafc;"><th style="padding-left: 30px;">Nome</th><th>Telefone</th><th>Endereço</th><th style="text-align: center;">Ações</th></tr></thead><tbody></tbody></table></div>
+                    </div>
+                </div>
+
+                <div id="screen-relatorios" class="screen">
+                    <div class="screen-wrapper">
+                        <div class="section-header"><h2>Visão Geral</h2></div>
+                        <div class="report-grid">
+                            <div class="kpi-card"><div style="color: var(--text-gray); font-weight: 600; text-transform: uppercase; font-size: 0.8rem;">Faturamento</div><div class="kpi-value" id="kpi-faturamento">R$ 0,00</div></div>
+                            <div class="kpi-card"><div style="color: var(--text-gray); font-weight: 600; text-transform: uppercase; font-size: 0.8rem;">Pedidos</div><div class="kpi-value" id="kpi-pedidos">0</div></div>
+                            <div class="kpi-card"><div style="color: var(--text-gray); font-weight: 600; text-transform: uppercase; font-size: 0.8rem;">Peças</div><div class="kpi-value" id="kpi-pecas">0</div></div>
+                        </div>
+                        <div class="card"><h3 style="margin-bottom: 20px; font-size: 1.2rem; color: var(--sidebar-bg);">Histórico Recente</h3><table id="tabela-historico"><thead><tr><th>Cliente</th><th>Qtd.</th><th>Valor</th><th>Data</th><th style="text-align: center;">Ações</th></tr></thead><tbody id="tbody-historico"></tbody></table></div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        
+        const handlePhone = (event) => {
+            let input = event.target;
+            input.value = phoneMask(input.value);
+        }
+
+        const phoneMask = (value) => {
+            if (!value) return "";
+            value = value.replace(/\D/g,''); 
+            value = value.replace(/(\d{2})(\d)/,"($1) $2"); 
+            value = value.replace(/(\d)(\d{4})$/,"$1-$2"); 
+            return value;
+        }
+
+        
+        const carregarDados = () => {
+            const salvos = localStorage.getItem('lavanderia_db_v2');
+            return salvos ? JSON.parse(salvos) : { clientes: [], pedidos: [] };
+        };
+
+        const db = carregarDados();
+        const salvarTudo = () => { localStorage.setItem('lavanderia_db_v2', JSON.stringify(db)); };
+
+        class Sistema {
+            constructor() { setTimeout(() => ctrlCliente.atualizarDatalist(), 500); }
+            login() {
+                const u = document.getElementById('user').value;
+                const p = document.getElementById('pass').value;
+                if(u === 'admin' && p === 'admin') {
+                    document.getElementById('login-overlay').style.display = 'none';
+                    document.getElementById('app-container').style.display = 'flex';
+                } else { alert("Dados incorretos!"); }
+            }
+            navegar(telaId) {
+                document.querySelectorAll('.menu-item').forEach(el => el.classList.remove('active'));
+                event.target.classList.add('active');
+                document.querySelectorAll('.screen').forEach(el => el.classList.remove('active'));
+                document.getElementById('screen-' + telaId).classList.add('active');
+                if(telaId === 'relatorios') ctrlRelatorio.gerar();
+                if(telaId === 'clientes') ctrlCliente.render();
+            }
+        }
+
+        class PedidoCtrl {
+            constructor() { this.pecas = []; }
+            adicionarPeca() {
+                const tipo = document.getElementById('peca-tipo').value;
+                const serv = document.getElementById('peca-servico').value;
+                const preco = parseFloat(document.getElementById('peca-preco').value);
+                this.pecas.push({ tipo, serv, preco });
+                this.render();
+            }
+            remover(idx) { this.pecas.splice(idx, 1); this.render(); }
+            calcular() {
+                let total = this.pecas.reduce((acc, p) => acc + p.preco, 0);
+                let desc = 0, txt = "";
+                if(this.pecas.length >= 16) { desc = total * 0.30; txt = "30% OFF"; }
+                else if(this.pecas.length >= 8) { desc = total * 0.20; txt = "20% OFF"; }
+                else if(this.pecas.length > 3) { desc = total * 0.10; txt = "10% OFF"; }
+                const el = document.getElementById('msg-desconto');
+                el.style.display = desc > 0 ? 'inline-block' : 'none';
+                el.innerText = txt;
+                return { final: total - desc };
+            }
+            render() {
+                const tb = document.getElementById('tabela-pecas-body');
+                tb.innerHTML = this.pecas.length ? this.pecas.map((p, i) => 
+                    `<tr><td>${p.tipo}</td><td>${p.serv}</td><td>R$ ${p.preco.toFixed(2)}</td><td style="text-align:center;"><button class="btn btn-danger" onclick="ctrlPedido.remover(${i})">X</button></td></tr>`
+                ).join('') : '<tr><td colspan="4" style="text-align:center; padding:30px; color:#999;">Cesto vazio</td></tr>';
+                document.getElementById('valor-total').innerText = this.calcular().final.toFixed(2);
+            }
+            finalizarPedido() {
+                const cli = document.getElementById('pedido-cliente').value;
+                const tel = document.getElementById('pedido-tel').value; 
+                
+                if(!cli || !this.pecas.length) return alert("Preencha os dados!");
+                
+                db.pedidos.push({ cliente: cli, telefone: tel, qtd: this.pecas.length, total: this.calcular().final, data: new Date().toLocaleDateString() });
+                salvarTudo();
+                alert("Pedido Salvo!"); 
+                this.pecas = []; this.render();
+                document.getElementById('pedido-cliente').value = "";
+                document.getElementById('pedido-tel').value = "";
+            }
+        }
+
+        class ClienteCtrl {
+            salvar() {
+                const nome = document.getElementById('cad-nome').value;
+                const tel = document.getElementById('cad-tel').value;
+                const end = document.getElementById('cad-end').value;
+                if(!nome) return alert("Preencha nome!");
+                
+                db.clientes.push({ nome, tel, end });
+                salvarTudo();
+                this.render(); this.atualizarDatalist();
+                alert("Cliente Salvo!");
+                document.getElementById('cad-nome').value = "";
+                document.getElementById('cad-tel').value = "";
+                document.getElementById('cad-end').value = "";
+            }
+            excluir(i) { 
+                if(confirm("Excluir cliente?")) {
+                    db.clientes.splice(i, 1); 
+                    salvarTudo();
+                    this.render(); this.atualizarDatalist();
+                }
+            }
+            render() {
+                const tb = document.querySelector('#tabela-clientes tbody');
+                tb.innerHTML = db.clientes.length ? db.clientes.map((c, i) => 
+                    `<tr><td style="padding-left:30px;"><b>${c.nome}</b></td><td>${c.tel}</td><td>${c.end}</td><td style="text-align:center;"><button class="btn btn-danger" onclick="ctrlCliente.excluir(${i})">X</button></td></tr>`
+                ).join('') : '<tr><td colspan="4" style="text-align:center; padding:30px; color:#999;">Sem clientes cadastrados</td></tr>';
+            }
+            atualizarDatalist() {
+                document.getElementById('lista-clientes-sugestao').innerHTML = db.clientes.map(c=>`<option value="${c.nome}">`).join('');
+            }
+        }
+
+        class RelatorioCtrl {
+            gerar() {
+                const fat = db.pedidos.reduce((a,b)=>a+b.total,0);
+                const qtd = db.pedidos.reduce((a,b)=>a+b.qtd,0);
+                document.getElementById('kpi-faturamento').innerText = "R$ " + fat.toFixed(2);
+                document.getElementById('kpi-pedidos').innerText = db.pedidos.length;
+                document.getElementById('kpi-pecas').innerText = qtd;
+                
+                const tb = document.getElementById('tbody-historico');
+                tb.innerHTML = db.pedidos.length ? db.pedidos.map((p, i) => 
+                    `<tr><td><b>${p.cliente}</b></td><td>${p.qtd}</td><td style="color:green; font-weight:bold;">R$ ${p.total.toFixed(2)}</td><td>${p.data}</td><td style="text-align:center;"><button class="btn btn-danger" onclick="ctrlRelatorio.excluir(${i})">X</button></td></tr>`
+                ).join('') : '<tr><td colspan="5" style="text-align:center; padding:30px; color:#999;">Sem histórico</td></tr>';
+            }
+            excluir(i) { 
+                if(confirm("Apagar pedido do histórico?")) {
+                    db.pedidos.splice(i, 1); 
+                    salvarTudo(); this.gerar(); 
+                }
+            }
+        }
+
+        const sistema = new Sistema();
+        const ctrlPedido = new PedidoCtrl();
+        const ctrlCliente = new ClienteCtrl();
+        const ctrlRelatorio = new RelatorioCtrl();
+        
+        ctrlCliente.render();
+        ctrlCliente.atualizarDatalist();
+
+    </script>
+</body>
+</html>
+#faufnfsufnsdfius fiuosfwef
